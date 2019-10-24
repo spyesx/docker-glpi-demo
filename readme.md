@@ -4,6 +4,12 @@ Version: 9.4.4
 
 The version can be modified in `docker/install.sh` (`GLPI_SOURCE_URL`).
 
+⚠️ Warning: Do no use in production. 
+
+Feel free to use this repo as an inspiration but keep in mind it's been done for a local demo. Therefore, no efforts have been made to secure GLPI.
+
+Please, reffer to the [official documentation](https://glpi-install.readthedocs.io/en/latest/install/index.html#installation) to do so.
+
 ## Dockerfile
 
 ```
