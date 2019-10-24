@@ -1,0 +1,57 @@
+FROM php:7.1-apache-buster
+
+MAINTAINER nicolas.bages@weinto.com
+
+RUN apt-get update && apt-get install -y wget apt-utils
+
+RUN a2enmod rewrite
+
+# LDAP
+RUN apt-get install libldap2-dev -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+    docker-php-ext-install ldap
+
+RUN apt install -y curl libcurl4
+RUN apt-get update
+RUN apt-get install -y libcurl4-gnutls-dev && \
+	docker-php-ext-install curl
+
+RUN apt-get install -y libpng-dev && \
+	docker-php-ext-install gd
+
+
+RUN docker-php-ext-install json
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install session
+
+RUN apt-get install -y libxml2 libxml2-dev && \
+	docker-php-ext-install simplexml
+
+RUN docker-php-ext-install xml
+
+RUN apt-get update && apt-get install -y libc-client-dev libkrb5-dev && rm -r /var/lib/apt/lists/*
+RUN docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+    docker-php-ext-install imap
+
+RUN docker-php-ext-configure opcache --enable-opcache \
+    && docker-php-ext-install opcache
+
+RUN  docker-php-ext-install xmlrpc
+
+RUN echo '' | pecl install apcu && \
+	docker-php-ext-enable apcu
+
+RUN docker-php-ext-install exif
+
+WORKDIR /var/www/html
+
+COPY docker/install.sh /tmp/
+RUN chmod +x /tmp/install.sh
+
+RUN /tmp/install.sh
+
+RUN chown -R www-data:www-data .
+
+EXPOSE 80

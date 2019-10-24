@@ -1,0 +1,42 @@
+version: "3.2"
+
+services:
+
+  mysql:
+    image: mysql:5.7.28
+    container_name: glpi-mysql
+    hostname: mysql
+    volumes:
+      - ./volumes/mysql:/var/lib/mysql
+    env_file:
+      - ./docker/mysql.env
+    restart: always
+    networks:
+      - glpi_back
+
+  glpi:
+    build:
+          context: ./
+          dockerfile: ./docker/dockerfiles/Dockerfile.glpi
+    container_name : glpi-instance
+    hostname: glpi
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - glpi_back
+
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    env_file:
+      - ./docker/phpmyadmin.env
+    networks:
+      - glpi_back
+
+networks:
+  glpi_back:
